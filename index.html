@@ -7,7 +7,19 @@
     <style>
         body { font-family: sans-serif; text-align: center; background-color: #fdf5e6; margin: 0; }
         .header { background-color: orange; padding: 20px; color: white; }
-        .logo { width: 100px; height: 100px; border-radius: 0; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
+        
+        /* लोगो आयताकृती करण्यासाठी खालील बदल केले आहेत */
+        .logo { 
+            width: 200px;           /* रुंदी वाढवली */
+            height: 120px;          /* उंची कमी केली (आयताकृती लूकसाठी) */
+            object-fit: contain;    /* फोटो न कापला जाता व्यवस्थित दिसेल */
+            border-radius: 0;       /* कोपरे चौकोनी */
+            margin-bottom: 10px; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        
         .btn { display: block; width: 85%; margin: 12px auto; padding: 15px; background: white; border-radius: 15px; text-decoration: none; color: #333; font-weight: bold; border: 1px solid orange; }
     </style>
 </head>
