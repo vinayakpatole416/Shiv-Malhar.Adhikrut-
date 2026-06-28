@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <title>ई-डिजिटल स्मार्ट कार्ड</title>
+    <style>
+        body { font-family: sans-serif; background: #fdf5e6; padding: 10px; }
+        .form-box { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        .card { width: 320px; padding: 20px; border: 3px solid #8e44ad; border-radius: 15px; margin: 20px auto; background: white; text-align: center; }
+        input { width: 90%; padding: 8px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>कार्डसाठी माहिती भरा</h2>
+        <input type="text" id="name" placeholder="पूर्ण नाव">
+        <input type="date" id="regDate">
+        <input type="text" id="village" placeholder="गाव">
+        <input type="text" id="constituency" placeholder="लोकसभा/विधानसभा">
+        <input type="file" id="photoInput" accept="image/*">
+        <button onclick="generateCard()" style="width: 100%; padding: 10px; background: #8e44ad; color: white;">कार्ड तयार करा</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        function generateCard() {
+            const name = document.getElementById('name').value;
+            const regDate = new Date(document.getElementById('regDate').value);
+            const village = document.getElementById('village').value;
+            const constituency = document.getElementById('constituency').value;
+            
+            const diffInDays = (new Date() - regDate) / (1000 * 3600 * 24);
+            const status = (diffInDays >= 730) ? "सदस्य" : "उपसदस्य";
+
+            const photo = document.getElementById('photoInput').files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('result').innerHTML = `
+                    <div class="card">
+                        <div style="color: #8e44ad; font-weight: bold;">श्री शिवमल्हार स्वराज्य प्रतिष्ठान</div>
+                        <img src="${e.target.result}" style="width:100px; height:100px; border-radius:50%; margin:10px;">
+                        <p><strong>नाव:</strong> ${name}</p>
+                        <p><strong>दर्जा:</strong> ${status}</p>
+                        <p>गाव: ${village} | ${constituency}</p>
+                        <p>स्थापक: मा. श्री. विनायक पाटोळे</p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${name}" style="margin-top:10px;">
+                    </div>
+                `;
+            }
+            if(photo) reader.readAsDataURL(photo);
+        }
+    </script>
+</body>
+</html>
