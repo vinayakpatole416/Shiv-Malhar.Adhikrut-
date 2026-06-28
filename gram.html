@@ -2,26 +2,35 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान</title>
+    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान - नोंदणी</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
-        .form-container { background: white; padding: 20px; border-radius: 8px; width: 350px; margin: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-        h2 { text-align: center; color: #333; }
+        body { font-family: sans-serif; background-color: #fdf5e6; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        select { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #8e44ad; border-radius: 6px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #8e44ad; color: white; border: none; border-radius: 6px; font-size: 18px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #732d91; }
+        h2 { text-align: center; color: #8e44ad; }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>निवड करा</h2>
+<div class="container">
+    <h2>पदाधिकारी नोंदणी फॉर्म</h2>
     
     <select id="distSelect"><option value="">-- जिल्हा निवडा --</option></select>
     <select id="talukaSelect"><option value="">-- प्रथम जिल्हा निवडा --</option></select>
     <select id="gpSelect"><option value="">-- प्रथम तालुका निवडा --</option></select>
+
+    <hr style="margin: 20px 0;">
+
+    <select id="orgTypeSelect"><option value="">-- संघटना प्रकार निवडा --</option></select>
+    <select id="positionSelect"><option value="">-- प्रथम संघटना निवडा --</option></select>
+
+    <button type="button" onclick="submitForm()">नोंदणी करा</button>
 </div>
 
 <script>
-    // १. पूर्ण मास्टर डेटा
+    // १. मास्टर डेटा
     const masterData = {
         "अहिल्यानगर": ["अकोले", "जामखेड", "कर्जत", "कोपरगाव", "नगर", "नेवासा", "पारनेर", "पाथर्डी", "राहुरी", "संगमनेर", "शेवगाव", "श्रीगोंदे", "श्रीरामपूर"],
         "अकोला": ["अकोला", "अकोट", "बाळापूर", "बार्शी टाकळी", "मूर्तिजापूर", "पातूर", "तेल्हारा"],
@@ -40,7 +49,7 @@
         "कोल्हापूर": ["आजरा", "भुदरगड", "चंदगड", "गडहिंग्लज", "हातकणंगले", "कागल", "करवीर", "पन्हाळा", "राधानगरी", "शाहूवाडी", "शिरोळ"],
         "लातूर": ["अहमदपूर", "औसा", "चाकूर", "देवणी", "लातूर", "निलंगा", "रेणापूर", "शिरूर अनंतपाळ", "उदगीर"],
         "मुंबई शहर": ["मुंबई शहर"],
-        "मुंबई उपनगर": ["कुर्ला", "अंधेरी", "बोरिवली"],
+        "मुंबई उपनगर": ["कुर्ला", "अंधेरी", "bोरिवली"],
         "नागपूर": ["हिंगणा", "कामठी", "काटोल", "कुही", "मौदा", "नागपूर ग्रामीण", "नरखेड", "पारशिवनी", "रामटेक", "सावनेर", "उमरेड"],
         "नांदेड": ["अर्धापूर", "भोकर", "बिलोली", "देगलूर", "धर्माबाद", "हदगाव", "हिमायतनगर", "कंधार", "किनवट", "लोहा", "माहूर", "मुदखेड", "मुखेड", "नांदेड", "उमरी"],
         "नंदुरबार": ["अक्कलकुवा", "अक्राणी", "नंदुरबार", "नवापूर", "शहादा", "तळोदा"],
@@ -61,192 +70,50 @@
         "यवतमाळ": ["बाभूळगाव", "दारव्हा", "दिग्रस", "घाटंजी", "कळंब", "केळापूर", "महागाव", "मारेगाव", "नेर", "पुसद", "राळेगाव", "उमरखेड", "वणी", "यवतमाळ", "झरी जामणी"]
     };
 
-    // २. ग्रामपंचायत डेटा
-    const gpData = {
-        "कवठे महांकाळ": ["अणगळगाव", "अळकुड", "अळकुड (स)", "आरेवाडी", "बाणेवाडी", "बासप्पावाडी", "बोरगाव", "चोरोची", "चुडेखिंडी", "ढेशिंग", "ढळेवाडी", "ढालगाव", "ढोलेवाडी", "धुळगाव", "दुधेभावी", "गर्जेवाडी", "घाटणंद्रे", "घोरपडी", "हरोली", "हिंगणगाव", "इराळी", "जाधववाडी", "जाखापूर", "जांभूळवाडी", "जयगव्हाण", "कदमवाडी", "कारलहट्टी", "शिवमल्हार स्वराज्यवाडी", "कवठे महांकाळ", "केरेवाडी", "खरशिंग", "कोग्नोळी", "कोकळे", "कुची", "कुकटोळी", "कुंडलापूर", "लांडगेवाडी", "लांगरपेठ", "लोणारवाडी", "मळणगाव", "म्हैसाळ", "मोघमवाडी", "मोरगाव", "नगाव", "नांगोळे", "निमज", "पिंपळवाडी", "रामपूरवाडी", "रंजनी", "रायवाडी", "सारती", "शेळकेवाडी", "शिंदेवाडी (१)", "शिंदेवाडी (२)", "शिरढोण", "थाबडेवाडी", "तिसंगी", "विठुरायाची वाडी", "वाघोली", "झुरेवाडी"]
+    const gpData = { "कवठे महांकाळ": ["अणगळगाव", "अळकुड", "आरेवाडी", "बोरगाव", "ढालगाव", "कुची", "शिवमल्हार स्वराज्यवाडी"] };
+    
+    const organizationStructure = {
+        "श्री शिवमल्हार स्वराज्य प्रतिष्ठान - Main": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार विध्यार्थी स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार कन्या स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार महिला स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार शेतकरी स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार कामगार स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार आरोग्य स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार परिवहन स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार उद्योजक स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"],
+        "श्री शिवमल्हार क्रीडा स्वराज्य प्रतिष्ठान": ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"]
     };
 
-    // ड्रॉपडाउन एलिमेंट्स
+    // DOM आणि Events
     const distSelect = document.getElementById('distSelect');
     const talukaSelect = document.getElementById('talukaSelect');
     const gpSelect = document.getElementById('gpSelect');
+    const orgTypeSelect = document.getElementById('orgTypeSelect');
+    const positionSelect = document.getElementById('positionSelect');
 
-    // जिल्हे भरणे
-    Object.keys(masterData).forEach(district => {
-        let option = document.createElement('option');
-        option.value = district;
-        option.text = district;
-        distSelect.add(option);
-    });
+    Object.keys(masterData).forEach(d => distSelect.add(new Option(d, d)));
+    Object.keys(organizationStructure).forEach(o => orgTypeSelect.add(new Option(o, o)));
 
-    // जिल्हा बदलल्यावर तालुके भरणे
-    distSelect.addEventListener('change', function() {
+    distSelect.addEventListener('change', () => {
         talukaSelect.innerHTML = '<option value="">-- तालुका निवडा --</option>';
-        gpSelect.innerHTML = '<option value="">-- प्रथम तालुका निवडा --</option>';
-        if (this.value) {
-            masterData[this.value].forEach(taluka => {
-                let option = document.createElement('option');
-                option.value = taluka;
-                option.text = taluka;
-                talukaSelect.add(option);
-            });
-        }
+        if(masterData[distSelect.value]) masterData[distSelect.value].forEach(t => talukaSelect.add(new Option(t, t)));
     });
 
-    // तालुका बदलल्यावर ग्रामपंचायत भरणे
-    talukaSelect.addEventListener('change', function() {
+    talukaSelect.addEventListener('change', () => {
         gpSelect.innerHTML = '<option value="">-- ग्रामपंचायत निवडा --</option>';
-        if (gpData[this.value]) {
-            gpData[this.value].forEach(gp => {
-                let option = document.createElement('option');
-                option.value = gp;
-                option.text = gp;
-                gpSelect.add(option);
-            });
-        }
+        if(gpData[talukaSelect.value]) gpData[talukaSelect.value].forEach(g => gpSelect.add(new Option(g, g)));
     });
-</script>
 
-</body>
-</html>
+    orgTypeSelect.addEventListener('change', () => {
+        positionSelect.innerHTML = '<option value="">-- पद निवडा --</option>';
+        if(organizationStructure[orgTypeSelect.value]) organizationStructure[orgTypeSelect.value].forEach(p => positionSelect.add(new Option(p, p)));
+    });
 
-<!DOCTYPE html>
-<html lang="mr">
-<head>
-    <meta charset="UTF-8">
-    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान</title>
-    <style>
-        body { font-family: sans-serif; background-color: #fdf5e6; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        select { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #8e44ad; border-radius: 5px; }
-        .data-section { margin-top: 20px; padding: 15px; border-top: 2px solid #8e44ad; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>पदाधिकारी निवड प्रक्रिया</h2>
-    
-    <select id="district" onchange="updateLevels()">
-        <option value="">-- जिल्हा निवडा (३६ जिल्हे) --</option>
-        </select>
-
-    <select id="level" onchange="updateUnits()">
-        <option value="">-- स्तर निवडा --</option>
-        <option value="mnp">महानगरपालिका (२९)</option>
-        <option value="np">नगरपालिका (२४६)</option>
-        <option value="npanch">नगरपंचायत (१२५)</option>
-    </select>
-
-    <select id="unit" onchange="showPositions()">
-        <option value="">-- प्रभाग / नगरसेवक निवडा --</option>
-    </select>
-
-    <div id="result" class="data-section"></div>
-</div>
-
-<script>
-    // १० विभाग आणि १० पदे
-    const wings = ["मुख्य प्रतिष्ठान", "विद्यार्थी स्वराज्य", "कन्या स्वराज्य", "महिला स्वराज्य", "शेतकरी स्वराज्य", "कामगार स्वराज्य", "आरोग्य स्वराज्य", "परिवहन स्वराज्य", "उद्योजक स्वराज्य", "क्रीडा स्वराज्य"];
-    const posts = ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"];
-
-    function showPositions() {
-        let container = document.getElementById('result');
-        let html = '<h3>पदाधिकारी भरती:</h3>';
-        
-        wings.forEach(wing => {
-            html += `<div style="background:#8e44ad; color:white; padding:5px; margin-top:10px;">${wing}</div>`;
-            posts.forEach(post => {
-                html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #ccc; padding:5px;">
-                            <span>${post}</span>
-                            <input type="text" placeholder="नाव भरा">
-                         </div>`;
-            });
-        });
-        container.innerHTML = html;
+    function submitForm() {
+        alert("तुमची नोंदणी यशस्वी झाली!");
     }
 </script>
+
 </body>
 </html>
-<!-- आधीचे जिल्हे/तालुके निवडल्यानंतर खालील कोड जोडा -->
-<select id="orgTypeSelect">
-    <option value="">-- संघटना प्रकार निवडा --</option>
-    <option value="main">श्री शिवमल्हार स्वराज्य प्रतिष्ठान - main</option>
-    <option value="student">श्री शिवमल्हार विध्यार्थी स्वराज्य प्रतिष्ठान</option>
-    <option value="girl">श्री शिवमल्हार कन्या स्वराज्य प्रतिष्ठान</option>
-    <option value="woman">श्री शिवमल्हार महिला स्वराज्य प्रतिष्ठान</option>
-    <option value="farmer">श्री शिवमल्हार शेतकरी स्वराज्य प्रतिष्ठान</option>
-    <option value="worker">श्री शिवमल्हार कामगार स्वराज्य प्रतिष्ठान</option>
-    <option value="health">श्री शिवमल्हार आरोग्य स्वराज्य प्रतिष्ठान</option>
-    <option value="transport">श्री शिवमल्हार परिवहन स्वराज्य प्रतिष्ठान</option>
-    <option value="business">श्री शिवमल्हार उद्योजक स्वराज्य प्रतिष्ठान</option>
-    <option value="sports">श्री शिवमल्हार क्रीडा स्वराज्य प्रतिष्ठान</option>
-</select>
-
-<select id="positionSelect">
-    <option value="">-- पद निवडा --</option>
-</select>
-
-<script>
-    const positions = [
-        "अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", 
-        "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"
-    ];
-
-    const orgTypeSelect = document.getElementById('orgTypeSelect');
-    const positionSelect = document.getElementById('positionSelect');
-
-    // संघटना प्रकार निवडल्यावर पदे दाखवणे
-    orgTypeSelect.addEventListener('change', function() {
-        positionSelect.innerHTML = '<option value="">-- पद निवडा --</option>';
-        if (this.value) {
-            positions.forEach(pos => {
-                let option = document.createElement('option');
-                option.value = pos;
-                option.text = pos;
-                positionSelect.add(option);
-            });
-        }
-    });
-</script>
-<!-- आधीचे जिल्हे/तालुके निवडल्यानंतर खालील कोड जोडा -->
-<select id="orgTypeSelect">
-    <option value="">-- संघटना प्रकार निवडा --</option>
-    <option value="main">श्री शिवमल्हार स्वराज्य प्रतिष्ठान - main</option>
-    <option value="student">श्री शिवमल्हार विध्यार्थी स्वराज्य प्रतिष्ठान</option>
-    <option value="girl">श्री शिवमल्हार कन्या स्वराज्य प्रतिष्ठान</option>
-    <option value="woman">श्री शिवमल्हार महिला स्वराज्य प्रतिष्ठान</option>
-    <option value="farmer">श्री शिवमल्हार शेतकरी स्वराज्य प्रतिष्ठान</option>
-    <option value="worker">श्री शिवमल्हार कामगार स्वराज्य प्रतिष्ठान</option>
-    <option value="health">श्री शिवमल्हार आरोग्य स्वराज्य प्रतिष्ठान</option>
-    <option value="transport">श्री शिवमल्हार परिवहन स्वराज्य प्रतिष्ठान</option>
-    <option value="business">श्री शिवमल्हार उद्योजक स्वराज्य प्रतिष्ठान</option>
-    <option value="sports">श्री शिवमल्हार क्रीडा स्वराज्य प्रतिष्ठान</option>
-</select>
-
-<select id="positionSelect">
-    <option value="">-- पद निवडा --</option>
-</select>
-
-<script>
-    const positions = [
-        "अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", 
-        "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"
-    ];
-
-    const orgTypeSelect = document.getElementById('orgTypeSelect');
-    const positionSelect = document.getElementById('positionSelect');
-
-    // संघटना प्रकार निवडल्यावर पदे दाखवणे
-    orgTypeSelect.addEventListener('change', function() {
-        positionSelect.innerHTML = '<option value="">-- पद निवडा --</option>';
-        if (this.value) {
-            positions.forEach(pos => {
-                let option = document.createElement('option');
-                option.value = pos;
-                option.text = pos;
-                positionSelect.add(option);
-            });
-        }
-    });
-</script>
