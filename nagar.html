@@ -2,71 +2,62 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान - प्रशासकीय स्तर</title>
+    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान - मास्टर डेटा</title>
     <style>
         body { font-family: sans-serif; background-color: #fdf5e6; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
-        .wing-title { background: #8e44ad; color: white; padding: 10px; margin-top: 20px; border-radius: 5px; font-weight: bold; }
-        .post { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px dotted #ccc; }
-        .post span:last-child { color: #555; font-weight: bold; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        select { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #8e44ad; border-radius: 5px; }
+        .wing { background:#8e44ad; color:white; padding:8px; margin-top:15px; font-weight:bold; }
+        .post-row { display:flex; justify-content:space-between; border-bottom:1px dotted #ccc; padding:8px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center; color:#8e44ad;">प्रशासकीय स्तर निवडा</h2>
+    <h2>संघटना पदाधिकारी नोंदणी</h2>
     
-    <label>१. स्तर निवडा:</label>
-    <select id="mainLevel" onchange="loadSubLevels()">
-        <option value="">-- निवडा --</option>
-        <option value="mnp">महानगरपालिका (२९)</option>
-        <option value="np">नगरपरिषद (२४६)</option>
-        <option value="npanch">नगरपंचायत (१४७)</option>
-    </select>
-
-    <label>२. जिल्हा / क्षेत्र निवडा:</label>
-    <select id="distLevel" onchange="loadUnits()"><option value="">-- जिल्हा निवडा --</option></select>
-
-    <label>३. नेमके ठिकाण निवडा:</label>
-    <select id="unitLevel" onchange="showData()"><option value="">-- ठिकाण निवडा --</option></select>
-
-    <div id="output"></div>
+    <select id="distSelect" onchange="updateLevels()"><option value="">-- जिल्हा निवडा --</option></select>
+    <select id="levelSelect" onchange="updateUnits()"><option value="">-- स्तर निवडा --</option></select>
+    <select id="unitSelect" onchange="showPositions()"><option value="">-- प्रभाग / संस्था निवडा --</option></select>
+    <div id="result"></div>
 </div>
 
 <script>
-    // डेटा स्ट्रक्चर - इथे तुम्ही तुमचे सर्व जिल्हे आणि तालुके भरू शकता
-    const db = {
-        mnp: { "मुंबई": ["मुंबई महानगरपालिका"], "पुणे": ["पुणे म.न.पा.", "पिंपरी-चिंचवड म.न.पा."] },
-        np: { "पुणे": ["बारामती", "इंदापूर", "जुन्नर"], "सातारा": ["कराड", "सातारा"] },
-        npanch: { "सातारा": ["खटाव", "माण"], "पुणे": ["वेल्हा"] }
+    // १. ३६ जिल्ह्यांची मास्टर यादी
+    const districts = ["अहिल्यानगर", "अकोला", "अमरावती", "छत्रपती संभाजीनगर", "बीड", "भंडारा", "बुलढाणा", "चंद्रपूर", "धुळे", "गडचिरोली", "गोंदिया", "हिंगोली", "जळगाव", "जालना", "कोल्हापूर", "लातूर", "मुंबई शहर", "मुंबई उपनगर", "नागपूर", "नांदेड", "नंदुरबार", "नाशिक", "धाराशिव", "पालघर", "परभणी", "पुणे", "रायगड", "रत्नागिरी", "सांगली", "सातारा", "सिंधुदुर्ग", "सोलापूर", "ठाणे", "वर्धा", "वाशिम", "यवतमाळ"];
+    
+    // २. मास्टर डेटा स्ट्रक्चर (महानगरपालिका, नगरपालिका, नगरपंचायत)
+    const masterData = {
+        mnp: ["मुंबई", "पुणे", "नागपूर", "ठाणे", "पिंपरी-चिंचवड", "नाशिक", "छत्रपती संभाजीनगर", "कल्याण-डोंबिवली", "वसई-विरार", "नवी मुंबई", "सोलापूर", "मीरा-भाईंदर", "भिवंडी-निजामपूर", "अमरावती", "नांदेड-वाघाळा", "कोल्हापूर", "अकोला", "जळगाव", "अहिल्यानगर", "धुळे", "लातूर", "परभणी", "चंद्रपूर", "मालेगाव", "उल्हासनगर", "पनवेल", "इचलकरंजी", "जालना", "चंद्रपूर"],
+        np: ["बार्शी", "पंढरपूर", "कराड", "सातारा", "सांगली", "कोपरगाव", "संगमनेर", "इत्यादी २४६ नगरपरिषदा..."],
+        npanch: ["खटाव", "माण", "आटपाडी", "इत्यादी १२५ नगरपंचायती..."]
     };
 
-    const wings = ["मुख्य प्रतिष्ठान", "विद्यार्थी", "कन्या", "महिला", "शेतकरी", "कामगार", "आरोग्य", "परिवहन", "उद्योजक", "क्रीडा"];
-    const posts = ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"];
+    // ३. इनिशियलायझेशन
+    const distSelect = document.getElementById('distSelect');
+    districts.forEach(d => distSelect.innerHTML += `<option value="${d}">${d}</option>`);
 
-    function loadSubLevels() {
-        let main = document.getElementById('mainLevel').value;
-        let dist = document.getElementById('distLevel');
-        dist.innerHTML = '<option value="">-- जिल्हा निवडा --</option>';
-        Object.keys(db[main] || {}).forEach(d => dist.innerHTML += `<option value="${d}">${d}</option>`);
+    function updateLevels() {
+        document.getElementById('levelSelect').innerHTML = `<option value="">-- स्तर निवडा --</option><option value="mnp">महानगरपालिका</option><option value="np">नगरपालिका</option><option value="npanch">नगरपंचायत</option>`;
     }
 
-    function loadUnits() {
-        let main = document.getElementById('mainLevel').value;
-        let d = document.getElementById('distLevel').value;
-        let unit = document.getElementById('unitLevel');
-        unit.innerHTML = '<option value="">-- ठिकाण निवडा --</option>';
-        (db[main][d] || []).forEach(u => unit.innerHTML += `<option value="${u}">${u}</option>`);
+    function updateUnits() {
+        let level = document.getElementById('levelSelect').value;
+        let unitSelect = document.getElementById('unitSelect');
+        unitSelect.innerHTML = '<option value="">-- प्रभाग / संस्था निवडा --</option>';
+        masterData[level].forEach(u => unitSelect.innerHTML += `<option value="${u}">${u}</option>');
     }
 
-    function showData() {
-        let out = document.getElementById('output');
-        out.innerHTML = '<h3 style="color:#8e44ad;">पदाधिकारी यादी</h3>';
+    function showPositions() {
+        const wings = ["मुख्य प्रतिष्ठान", "विद्यार्थी स्वराज्य", "कन्या स्वराज्य", "महिला स्वराज्य", "शेतकरी स्वराज्य", "कामगार स्वराज्य", "आरोग्य स्वराज्य", "परिवहन स्वराज्य", "उद्योजक स्वराज्य", "क्रीडा स्वराज्य"];
+        const posts = ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"];
+        
+        let html = '<h3>पदाधिकारी भरती:</h3>';
         wings.forEach(w => {
-            out.innerHTML += `<div class="wing-title">${w}</div>`;
-            posts.forEach(p => out.innerHTML += `<div class="post"><span>${p}</span><span>[नाव]</span></div>`);
+            html += `<div class="wing">${w}</div>`;
+            posts.forEach(p => html += `<div class="post-row"><span>${p}</span><input type="text" placeholder="नाव"></div>`);
         });
+        document.getElementById('result').innerHTML = html;
     }
 </script>
 </body>
