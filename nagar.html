@@ -2,53 +2,72 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>नगर स्तर - श्री शिवमल्हार स्वराज्य प्रतिष्ठान</title>
+    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान - प्रशासकीय स्तर</title>
     <style>
-        body { font-family: sans-serif; background-color: #fdf5e6; padding: 15px; }
-        .header { background: #2980b9; color: white; padding: 20px; text-align: center; border-radius: 12px; margin-bottom: 20px; }
-        .accordion { background: white; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; overflow: hidden; }
-        .accordion-header { padding: 15px; background: #ebf5fb; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
-        .accordion-content { padding: 15px; display: none; font-size: 0.95rem; background: #fff; }
-        .post { margin: 6px 0; padding: 8px; border-bottom: 1px dotted #ccc; display: flex; justify-content: space-between; }
-        .back-btn { display: block; padding: 15px; background: #333; color: white; text-align: center; text-decoration: none; border-radius: 10px; margin-top: 20px; }
+        body { font-family: sans-serif; background-color: #fdf5e6; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
+        .wing-title { background: #8e44ad; color: white; padding: 10px; margin-top: 20px; border-radius: 5px; font-weight: bold; }
+        .post { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px dotted #ccc; }
+        .post span:last-child { color: #555; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header"><h1>🏙️ नगर स्तर - संघटना</h1></div>
+<div class="container">
+    <h2 style="text-align:center; color:#8e44ad;">प्रशासकीय स्तर निवडा</h2>
+    
+    <label>१. स्तर निवडा:</label>
+    <select id="mainLevel" onchange="loadSubLevels()">
+        <option value="">-- निवडा --</option>
+        <option value="mnp">महानगरपालिका (२९)</option>
+        <option value="np">नगरपरिषद (२४६)</option>
+        <option value="npanch">नगरपंचायत (१४७)</option>
+    </select>
 
-<div id="nagar-content"></div>
+    <label>२. जिल्हा / क्षेत्र निवडा:</label>
+    <select id="distLevel" onchange="loadUnits()"><option value="">-- जिल्हा निवडा --</option></select>
 
-<a href="index.html" class="back-btn">🏠 मुख्य मेनू | Home</a>
+    <label>३. नेमके ठिकाण निवडा:</label>
+    <select id="unitLevel" onchange="showData()"><option value="">-- ठिकाण निवडा --</option></select>
+
+    <div id="output"></div>
+</div>
 
 <script>
-    const wings = [
-        { name: "श्री शिवमल्हार स्वराज्य प्रतिष्ठान - main", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार विद्यार्थी स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार कन्या स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार महिला स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार शेतकरी स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार कामगार स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार आरोग्य स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार परिवहन स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार उद्योजक स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] },
-        { name: "श्री शिवमल्हार क्रीडा स्वराज्य प्रतिष्ठान", posts: ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"] }
-    ];
+    // डेटा स्ट्रक्चर - इथे तुम्ही तुमचे सर्व जिल्हे आणि तालुके भरू शकता
+    const db = {
+        mnp: { "मुंबई": ["मुंबई महानगरपालिका"], "पुणे": ["पुणे म.न.पा.", "पिंपरी-चिंचवड म.न.पा."] },
+        np: { "पुणे": ["बारामती", "इंदापूर", "जुन्नर"], "सातारा": ["कराड", "सातारा"] },
+        npanch: { "सातारा": ["खटाव", "माण"], "पुणे": ["वेल्हा"] }
+    };
 
-    let container = document.getElementById('nagar-content');
-    wings.forEach(wing => {
-        let postsHtml = wing.posts.map(p => `<div class="post"><span>${p}</span> <span>[नाव]</span></div>`).join('');
-        container.innerHTML += `
-            <div class="accordion">
-                <div class="accordion-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display === 'block') ? 'none' : 'block'">
-                    ${wing.name} <span>▼</span>
-                </div>
-                <div class="accordion-content">${postsHtml}</div>
-            </div>
-        `;
-    });
+    const wings = ["मुख्य प्रतिष्ठान", "विद्यार्थी", "कन्या", "महिला", "शेतकरी", "कामगार", "आरोग्य", "परिवहन", "उद्योजक", "क्रीडा"];
+    const posts = ["अध्यक्ष", "उपाध्यक्ष", "सचिव", "उपसचिव", "शाखाप्रमुख", "शाखाउपप्रमुख", "कार्याध्यक्ष", "कार्याउपाध्यक्ष", "सभासद", "उपसभासद"];
+
+    function loadSubLevels() {
+        let main = document.getElementById('mainLevel').value;
+        let dist = document.getElementById('distLevel');
+        dist.innerHTML = '<option value="">-- जिल्हा निवडा --</option>';
+        Object.keys(db[main] || {}).forEach(d => dist.innerHTML += `<option value="${d}">${d}</option>`);
+    }
+
+    function loadUnits() {
+        let main = document.getElementById('mainLevel').value;
+        let d = document.getElementById('distLevel').value;
+        let unit = document.getElementById('unitLevel');
+        unit.innerHTML = '<option value="">-- ठिकाण निवडा --</option>';
+        (db[main][d] || []).forEach(u => unit.innerHTML += `<option value="${u}">${u}</option>`);
+    }
+
+    function showData() {
+        let out = document.getElementById('output');
+        out.innerHTML = '<h3 style="color:#8e44ad;">पदाधिकारी यादी</h3>';
+        wings.forEach(w => {
+            out.innerHTML += `<div class="wing-title">${w}</div>`;
+            posts.forEach(p => out.innerHTML += `<div class="post"><span>${p}</span><span>[नाव]</span></div>`);
+        });
+    }
 </script>
-
 </body>
 </html>
