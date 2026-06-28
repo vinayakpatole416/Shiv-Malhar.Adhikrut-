@@ -38,6 +38,7 @@
         function generateCard() {
             const name = document.getElementById('name').value;
             const regDate = new Date(document.getElementById('regDate').value);
+            // २ वर्षे (७३० दिवस) पूर्ण झाल्यास 'सदस्य', अन्यथा 'उपसदस्य'
             const status = ((new Date() - regDate) / (1000 * 3600 * 24) >= 730) ? "सदस्य" : "उपसदस्य";
             
             const photo = document.getElementById('photoInput').files[0];
