@@ -3,80 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>सार्वजनिक मंडळ नोंदणी</title>
+    <title>श्री शिवमल्हार स्वराज्य प्रतिष्ठान - सार्वजनिक मित्र मंडळ नोंदणी</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-gray-100 p-4">
 
 <div class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl">
-    <h2 class="text-xl font-bold text-center text-purple-800 mb-6">श्री शिवमल्हार स्वराज्य प्रतिष्ठान<br>सार्वजनिक मित्र मंडळ नोंदणी</h2>
+    <h2 class="text-xl font-bold text-center text-purple-800 mb-6">श्री शिवमल्हार स्वराज्य प्रतिष्ठान<br>नोंदणी फॉर्म</h2>
 
-    <form id="mandalForm" class="space-y-4">
-        <select class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
-            <option>हिंदुस्थान (Maharashtra)</option>
+    <form id="regForm" class="space-y-3">
+        <select id="state" class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
+            <option value="हिंदुस्थान">हिंदुस्थान</option>
+            <option value="महाराष्ट्र">महाराष्ट्र</option>
         </select>
         
-        <select class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
-            <option>जिल्हा (Zilla) निवडा</option>
-            <option>पुणे</option><option>मुंबई</option><option>नागपूर</option><option>छत्रपती संभाजीनगर</option>
+        <select id="zilla" class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
+            <option value="">जिल्हा निवडा</option>
+            <option value="पुणे">पुणे</option>
+            <option value="मुंबई">मुंबई</option>
+            <option value="नागपूर">नागपूर</option>
         </select>
 
-        <select class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
-            <option>तालुका (Taluka) निवडा</option>
-            <option>हवेली</option><option>पुरंदर</option><option>बारामती</option>
+        <select id="taluka" class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold bg-purple-50">
+            <option value="">तालुका निवडा</option>
+            <option value="हवेली">हवेली</option>
+            <option value="पुरंदर">पुरंदर</option>
+            <option value="बारामती">बारामती</option>
         </select>
 
-        <input type="text" id="gavName" placeholder="गावचे नाव (Village/City)" class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold">
-
-        <div class="mb-4">
-            <label class="block font-bold text-purple-900 mb-2">पदाधिकारी निवडा:</label>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" class="bg-gray-100 p-2 rounded border hover:bg-purple-100 font-bold">अध्यक्ष</button>
-                <button type="button" class="bg-gray-100 p-2 rounded border hover:bg-purple-100 font-bold">उपाध्यक्ष</button>
-                <button type="button" class="bg-gray-100 p-2 rounded border hover:bg-purple-100 font-bold">सचिव</button>
-                <button type="button" class="bg-gray-100 p-2 rounded border hover:bg-purple-100 font-bold">उपसचिव</button>
-            </div>
-        </div>
-
-        <button type="button" onclick="generateCard()" class="w-full bg-purple-800 text-white p-4 rounded-xl font-bold text-lg hover:bg-purple-900 transition">
-            नोंदणी पूर्ण करा (Register)
-        </button>
+        <input type="text" id="gName" placeholder="गावचे नाव" class="w-full p-3 border-2 border-purple-500 rounded-xl font-bold">
+        
+        <input type="text" id="p1" placeholder="अध्यक्ष" class="w-full p-2 border rounded-lg">
+        <input type="text" id="p2" placeholder="उपाध्यक्ष" class="w-full p-2 border rounded-lg">
+        <input type="text" id="p3" placeholder="सचिव" class="w-full p-2 border rounded-lg">
+        <input type="text" id="p4" placeholder="उपसचिव" class="w-full p-2 border rounded-lg">
+        <input type="text" id="p5" placeholder="कार्याध्यक्ष" class="w-full p-2 border rounded-lg">
+        <input type="text" id="p6" placeholder="कार्याउपाध्यक्ष" class="w-full p-2 border rounded-lg">
+        <input type="date" id="estDate" class="w-full p-2 border rounded-lg">
+        
+        <button type="button" onclick="saveAndGenerate()" class="w-full bg-purple-800 text-white p-4 rounded-xl font-bold hover:bg-purple-900">स्मार्ट कार्ड तयार करा</button>
     </form>
 
-    <div id="smartCard" class="hidden mt-8 p-6 bg-purple-50 border-4 border-purple-800 rounded-2xl text-center">
-        <h3 class="text-xl font-bold text-purple-900">श्री शिवमल्हार मित्र मंडळ</h3>
-        <p id="displayGav" class="text-lg font-bold mt-2"></p>
-        <p class="text-sm mt-4">नोंदणी क्रमांक: <span id="regNo"></span></p>
-        <p class="text-[10px] mt-2 text-gray-600">हे अधिकृत डिजिटल ओळखपत्र आहे.</p>
-        <button onclick="downloadPDF()" class="mt-6 w-full bg-green-600 text-white p-2 rounded-lg font-bold">PDF डाउनलोड करा</button>
+    <div id="card" class="hidden mt-8 p-6 bg-white border-8 border-double border-purple-900 rounded-3xl text-center shadow-2xl">
+        <h1 class="text-sm font-bold text-purple-900">श्री शिवमल्हार स्वराज्य प्रतिष्ठान<br>सार्वजनिक मित्र मंडळ</h1>
+        <p class="text-[10px] mt-1">नोंदणी क्र: <span id="cReg"></span></p>
+        <hr class="my-2 border-purple-300">
+        <div class="text-left text-[11px] space-y-0.5">
+            <p><b>ठिकाण:</b> <span id="cLoc"></span></p>
+            <p><b>गाव:</b> <span id="cGav"></span></p>
+            <p><b>अध्यक्ष:</b> <span id="cP1"></span></p>
+            <p><b>उपाध्यक्ष:</b> <span id="cP2"></span></p>
+            <p><b>सचिव:</b> <span id="cP3"></span></p>
+            <p><b>उपसचिव:</b> <span id="cP4"></span></p>
+            <p><b>कार्याध्यक्ष:</b> <span id="cP5"></span></p>
+            <p><b>कार्याउपाध्यक्ष:</b> <span id="cP6"></span></p>
+            <p><b>स्थापना:</b> <span id="cDate"></span></p>
+        </div>
+        <div class="mt-3 text-[9px] bg-gray-100 p-1 rounded italic text-purple-800">संस्थापक/आध्यक्ष: मा. श्री. विनायक पाटोळे</div>
+        <div id="qrcode" class="mt-4 flex justify-center"></div>
+        <button onclick="downloadPDF()" class="mt-4 w-full bg-green-700 text-white py-2 rounded-lg font-bold text-sm">Download PDF</button>
     </div>
-
-    <a href="dashboard.html" class="mt-8 block text-center text-purple-700 font-bold underline">⬅ मुख्य डॅशबोर्डवर परत जा</a>
 </div>
 
 <script>
-    function generateCard() {
-        const gav = document.getElementById('gavName').value;
-        if(!gav) { alert("कृपया गावचे नाव भरा"); return; }
+    function saveAndGenerate() {
+        const data = {
+            state: document.getElementById('state').value,
+            zilla: document.getElementById('zilla').value,
+            taluka: document.getElementById('taluka').value,
+            gav: document.getElementById('gName').value,
+            p1: document.getElementById('p1').value,
+            p2: document.getElementById('p2').value,
+            p3: document.getElementById('p3').value,
+            p4: document.getElementById('p4').value,
+            p5: document.getElementById('p5').value,
+            p6: document.getElementById('p6').value,
+            date: document.getElementById('estDate').value
+        };
+        localStorage.setItem('mandalData', JSON.stringify(data));
+        displayCard(data);
+    }
+
+    function displayCard(data) {
+        document.getElementById('cLoc').innerText = data.taluka + ", " + data.zilla + " (" + data.state + ")";
+        document.getElementById('cGav').innerText = data.gav;
+        document.getElementById('cP1').innerText = data.p1;
+        document.getElementById('cP2').innerText = data.p2;
+        document.getElementById('cP3').innerText = data.p3;
+        document.getElementById('cP4').innerText = data.p4;
+        document.getElementById('cP5').innerText = data.p5;
+        document.getElementById('cP6').innerText = data.p6;
+        document.getElementById('cDate').innerText = data.date;
+        document.getElementById('cReg').innerText = "SM-" + Math.floor(100000 + Math.random() * 900000);
         
-        document.getElementById('displayGav').innerText = "गाव: " + gav;
-        document.getElementById('regNo').innerText = Math.floor(100000 + Math.random() * 900000);
-        document.getElementById('smartCard').classList.remove('hidden');
+        document.getElementById('card').classList.remove('hidden');
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), data.gav + " - " + data.taluka);
     }
 
     function downloadPDF() {
-        const element = document.getElementById('smartCard');
-        const opt = {
-            margin: 1,
-            filename: 'Shiv-Malhar-SmartCard.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
+        html2pdf().from(document.getElementById('card')).save('Smart_Card.pdf');
     }
-</script>
 
+    window.onload = () => {
+        const saved = localStorage.getItem('mandalData');
+        if(saved) displayCard(JSON.parse(saved));
+    };
+</script>
 </body>
 </html>
